@@ -2,7 +2,6 @@ package smolid
 
 import (
 	"math"
-	"strconv"
 	"testing"
 	"time"
 )
@@ -16,7 +15,6 @@ func TestRandomSpace(t *testing.T) {
 		toFill |= New().n
 		if toFill == math.MaxUint64 {
 			filled = true
-			t.Log("Random space filled at " + strconv.Itoa(i))
 			break
 		}
 	}

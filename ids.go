@@ -36,16 +36,25 @@ ID is a 64-bit (8-byte) value intended to be
 
 Field Definitions
 
-  - Timestamp (41 bits) The most significant 41 bits represent a millisecond-precision timestamp
+	0                   1                   2                   3
+	0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+	+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+	|                          time_high                            |
+	+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+	|    time_low     |ver|t| rand  | type or rand|       rand      |
+	+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+Field Descriptions:
+
+  - Timestamp (41 bits): The most significant 41 bits represent a millisecond-precision timestamp
     The allowed timestamp range is 2025-01-01 00:00:00 - 2094-09-07 15:47:35
-  - Version (2 bits) Bits 41-42 are reserved for versioning.
-    v1 is 0b01
+  - Version (2 bits): Bits 41-42 are reserved for versioning.
+    v1 is `01`
   - Type Flag (1 bit): Bit 43 serves as a boolean flag. If set, the "Type/Rand" field is an embedded type identifier.
-  - Reserved/Random (4 bits): The remaining 4 bits of the 6th byte are reserved for future needs. In Version 1, these
-    are populated with pseudo-random data.
+  - Random (4 bits): The remaining 4 bits of the 6th byte are populated with pseudo-random data.
   - Type/Random (7 bits): If the Type Flag is set, this field contains the Type Identifier. Otherwise, it
     is populated with pseudo-random data.
-  - Random (9 bits): The remaining byte is dedicated to pseudo-random data to reasonably ensure uniqueness.
+  - Random (9 bits): The remaining byte is dedicated to pseudo-random data to _reasonably_ ensure uniqueness.
 
 String Format
 
