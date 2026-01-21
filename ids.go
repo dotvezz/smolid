@@ -145,9 +145,32 @@ func (id ID) Time() time.Time {
 // Type returns the type identifier embedded in the ID, if any. It will return an error if the ID was not created by
 // NewWithType.
 func (id ID) Type() (byte, error) {
-	if id.n&v1TypeFlag == 0 {
+	if !id.IsTyped() {
 		return 0, ErrUntyped
 	}
 	typ := id.n & v1TypeMask
 	return byte(typ >> v1TypeShiftOffset), nil
 }
+
+// IsTyped returns true if the ID was created by NewWithType.
+func (id ID) IsTyped() bool { return id.n&v1TypeFlag != 0 }
+
+// IsOfType returns true if the ID is typed and matches the given type identifier.It will return an error if the ID
+// was not created by NewWithType.
+func (id ID) IsOfType(typ byte) (bool, error) {
+	if !id.IsTyped() {
+		return false, ErrUntyped
+	}
+	if typ > v1TypeSize {
+		return false, ErrInvalidType
+	}
+
+	// If we've reached this point, we know the ID is typed.
+	typ2, _ := id.Type()
+
+	return typ == typ2, nil
+}
+
+// Uint64 returns the raw 64-bit integer representation of the ID. Use this instead of Int64Value for most cases. The
+// Int64Value method is provided for compatibility with the pgtype.Int8Valuer interface.
+func (id ID) Uint64() uint64 { return id.n }

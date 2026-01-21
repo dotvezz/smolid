@@ -125,3 +125,74 @@ func TestNewForTypeInvalid(t *testing.T) {
 		t.Fatal("Expected error")
 	}
 }
+
+func TestID_IsTyped(t *testing.T) {
+	tests := []struct {
+		name string
+		id   ID
+		want bool
+	}{
+		{
+			name: "Untyped",
+			id:   New(),
+			want: false,
+		},
+		{
+			name: "Typed",
+			id:   Must(NewWithType(1)),
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.id.IsTyped(); got != tt.want {
+				t.Errorf("IsTyped() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestID_IsOfType(t *testing.T) {
+	type args struct {
+		typ byte
+	}
+	tests := []struct {
+		name    string
+		id      ID
+		args    args
+		want    bool
+		wantErr bool
+	}{
+		{
+			name:    "Invalid Type",
+			id:      New(),
+			args:    args{typ: v1TypeSize + 1},
+			wantErr: true,
+		},
+		{
+			name:    "Match",
+			id:      Must(NewWithType(1)),
+			args:    args{typ: 1},
+			want:    true,
+			wantErr: false,
+		},
+		{
+			name: "No Match",
+			id:   Must(NewWithType(1)),
+			args: args{typ: 2},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.id.IsOfType(tt.args.typ)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("IsOfType() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("IsOfType() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
