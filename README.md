@@ -7,6 +7,11 @@
 - **Compact**: Fits into a standard Go `uint64` and a PostgreSQL `bigint`.
 - **Type-Aware**: Supports embedding an optional 7-bit type identifier directly into the ID.
 
+## Related Links
+
+- [mirorac/smolid-js](https://github.com/mirorac/smolid-js) is a reimplementation of `smolid` in Javascript and Typescript by [@mirorac](https://github.com/mirorac)
+  - NPM Link: https://www.npmjs.com/package/smolid
+
 ## ID Structure
 
 A `smolid` consists of 64 bits partitioned as follows:
