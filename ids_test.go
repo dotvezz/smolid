@@ -2,6 +2,7 @@ package smolid
 
 import (
 	"math"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -192,6 +193,50 @@ func TestID_IsOfType(t *testing.T) {
 			}
 			if got != tt.want {
 				t.Errorf("IsOfType() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestFromUint64(t *testing.T) {
+	type args struct {
+		n uint64
+	}
+
+	testID := Must(FromString("apviiguuvmsh2"))
+
+	tests := []struct {
+		name    string
+		args    args
+		want    ID
+		wantErr bool
+	}{
+		{
+			name:    "invalid (version missing)",
+			args:    args{n: 0},
+			wantErr: true,
+		},
+		{
+			name:    "invalid (version too high)",
+			args:    args{n: math.MaxUint64},
+			wantErr: true,
+		},
+		{
+			name:    "valid (version 1)",
+			args:    args{n: testID.n},
+			want:    testID,
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := FromUint64(tt.args.n)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("FromUint64() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("FromUint64() got = %v, want %v", got, tt.want)
 			}
 		})
 	}

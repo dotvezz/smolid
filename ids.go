@@ -56,10 +56,13 @@ Field Descriptions:
     is populated with pseudo-random data.
   - Random (9 bits): The remaining byte is dedicated to pseudo-random data to _reasonably_ ensure uniqueness.
 
-String Format
+String Format: The string format is base32 with no padding. Canonically the string is lowercased. This decision is
+purely for aesthetics, but the parser is case-insensitive and will accept uppercase base32 strings.
 
-	The string format is base32 with no padding. Canonically the string is lowercased. This decision is purely for
-	aesthetics, but the parser is case-insensitive and will accept uppercase base32 strings.
+Requirements of a valid ID: Currently there is only one requirement which will apply to all versions.
+
+  - All versions: The version must not be zero
+  - All versions: The version must a supported version. Currently this package supports versions: [ 1 ]
 */
 type ID struct {
 	n uint64
@@ -89,6 +92,9 @@ func NewWithType(typ byte) (ID, error) {
 
 // FromString parses a smolid.ID from a string. While the canonical representation is all-lowercase, the parser is
 // case-insensitive and will accept uppercase or mixed case without problems.
+//
+// Returns an error if there are any problems decoding the string, or if the parsed ID does not fulfill the requirements
+// of a valid smolid.ID.
 func FromString(s string) (_ ID, err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -107,7 +113,30 @@ func FromString(s string) (_ ID, err error) {
 		return Nil(), err
 	}
 
-	return ID{binary.BigEndian.Uint64(bs)}, nil
+	id := ID{binary.BigEndian.Uint64(bs)}
+	if err = id.validate(); err != nil {
+		return Nil(), err
+	}
+
+	return id, nil
+}
+
+func FromUint64(n uint64) (ID, error) {
+	id := ID{n}
+
+	if err := id.validate(); err != nil {
+		return Nil(), err
+	}
+
+	return id, nil
+}
+
+func (id ID) validate() error {
+	if id.Version() != 1 {
+		return fmt.Errorf("invalid version: %d", id.Version())
+	}
+
+	return nil
 }
 
 // Must is a convenience function that panics if the given error is not nil. Useful for testing or scenarios where you
