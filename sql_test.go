@@ -53,13 +53,13 @@ func TestID_Scan(t *testing.T) {
 }
 
 func TestID_Value(t *testing.T) {
-	id := ID{n: 12345}
+	id := New()
 	val, err := id.Value()
 	if err != nil {
 		t.Fatalf("Value failed: %v", err)
 	}
-	if val != int64(12345) {
-		t.Errorf("expected int64(12345), got %v (%T)", val, val)
+	if val != id.String() {
+		t.Errorf("expected string(%s), got %T(%v)", id.String(), val, val)
 	}
 
 	var _ driver.Valuer = ID{}

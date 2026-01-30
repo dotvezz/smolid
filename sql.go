@@ -27,6 +27,12 @@ func (id *ID) Scan(value any) error {
 		id.n = uint64(v)
 	case uint64:
 		id.n = v
+	case string:
+		id2, err := FromString(v)
+		if err != nil {
+			return fmt.Errorf("invalid smolid.ID string %s: %w", v, err)
+		}
+		id.n = id2.n
 	default:
 		return fmt.Errorf("can't scan %T into smolid.ID", value)
 	}
@@ -36,12 +42,17 @@ func (id *ID) Scan(value any) error {
 
 // Value implements the driver.Valuer interface.
 func (id ID) Value() (driver.Value, error) {
-	return int64(id.n), nil
+	return id.String(), nil
 }
 
 // Int64Value implements the pgtype.Int8Valuer interface (PostgreSQL BIGINT).
 func (id ID) Int64Value() (pgtype.Int8, error) {
 	return pgtype.Int8{Int64: int64(id.n), Valid: true}, nil
+}
+
+// TextValue implements th epgtype.TextValuer interface (PostgreSQL TEXT).
+func (id ID) TextValue() (pgtype.Text, error) {
+	return pgtype.Text{String: id.String(), Valid: true}, nil
 }
 
 // ScanInt64 implements the pgtype.Int8Scanner interface.
@@ -52,6 +63,11 @@ func (id *ID) ScanInt64(v pgtype.Int8) error {
 	}
 	id.n = uint64(v.Int64)
 	return nil
+}
+
+// ScanText implements the pgtype.TextScanner interface.
+func (id *ID) ScanText(v pgtype.Text) error {
+	return id.Scan(v.String)
 }
 
 // GormDataType returns the data type for GORM.
