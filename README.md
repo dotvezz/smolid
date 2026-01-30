@@ -11,6 +11,9 @@
 
 - [mirorac/smolid-js](https://github.com/mirorac/smolid-js) is a reimplementation of `smolid` in Javascript and Typescript by [@mirorac](https://github.com/mirorac)
   - NPM Link: https://www.npmjs.com/package/smolid
+- [smolid-rs](https://github.com/dotvezz/smolid-rs) is a reimplementation of `smolid` in Rust
+  - Crates.io link: https://crates.io/crates/smolid
+- [pg_smolid](https://github.com/dotvezz/pg_smolid) is an extension adding `smolid` types and helper functions to PostgreSQL.
 
 ## ID Structure
 
